@@ -10,25 +10,25 @@ exports.echoServer = function() {
       echo += header + ": " + request.headers[header] + "\r\n";
     }
     echo += '\r\n';
-    
+
     request.addListener('data', function(chunk) {
       echo += chunk.toString('binary');
     });
     request.addListener('end', function() {
-      
+
       var requestedCode = request.headers['x-give-me-status'];
-      
+
       response.writeHead(requestedCode || 200, {
         'Content-Type': 'text/plain',
         'Content-Length': echo.length
       });
-    
+
       response.write(echo);
       response.end();
       server.close();
     });
   });
-  
+
   var port = exports.port++;
   server.listen(port, "localhost");
   return ["http://localhost:" + port, server];
@@ -38,26 +38,26 @@ exports.dataServer = function() {
   var json = "{ \"ok\": true }";
   var xml  = "<document><ok>true</ok></document>";
   var yaml = "ok: true";
-  
+
   var server = http.createServer(function(request, response) {
     response.writeHead(200, { 'Content-Type': request.headers['accepts'], 'test': 'thing' });
-    
+
     if (request.headers['accepts'] == 'application/json') {
       response.write(json);
     }
-    
+
     if (request.headers['accepts'] == 'application/xml') {
       response.write(xml);
     }
-    
+
     if (request.headers['accepts'] == 'application/yaml') {
       response.write(yaml);
     }
-    
+
     response.end();
     server.close();
   });
-  
+
   var port = exports.port++;
   server.listen(port, "localhost");
   return ["http://localhost:" + port, server];
@@ -65,7 +65,7 @@ exports.dataServer = function() {
 
 exports.redirectServer = function() {
   var port = exports.port++;
-  
+
   var server = http.createServer(function(request, response) {
     if (request.url == '/redirected') {
       response.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -77,9 +77,9 @@ exports.redirectServer = function() {
       response.write('Redirecting...');
       response.end();
     }
-    
+
   });
-  
+
   server.listen(port, "localhost");
   return ["http://localhost:" + port, server];
 }
@@ -107,10 +107,10 @@ exports.port = 7000;
 
 exports.testCase = function(caseName, serverFunc, tests) {
   var testCount = 0, passes = 0, fails = 0;
-  
+
   function wrapAssertions(name) {
     var assertions = {};
-    
+
     [
       'ok',
       'equal',
@@ -134,19 +134,19 @@ exports.testCase = function(caseName, serverFunc, tests) {
         }
       }
     });
-    
+
     return assertions;
   }
-  
+
   if (typeof serverFunc != 'function') {
     tests = serverFunc;
     serverFunc = null;
   }
-  
+
   for (var name in tests) {
     if (name.match(/^test/)) {
       if (typeof serverFunc == 'function') {
-        var res = serverFunc(), host = res[0], 
+        var res = serverFunc(), host = res[0],
             server = res[1];
         tests[name](host, wrapAssertions(name));
       } else {
@@ -154,7 +154,7 @@ exports.testCase = function(caseName, serverFunc, tests) {
       }
     }
   }
-  
+
   process.addListener('exit', function() {
     var passFail = (testCount == passes) ? ' \033[0;32mPASS\033[1;37m' : ' \033[0;31mFAIL\033[1;37m';
     sys.puts(caseName + " - Assertions: " + testCount + " Passed: " + passes + " Failed: " + fails + passFail);

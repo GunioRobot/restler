@@ -5,7 +5,7 @@ require.paths.push(process.cwd());
 var sys  = require('util'),
     rest = require('../lib/restler'),
     repl = require('repl');
-  
+
 var replServer = repl.start();
 
 var exportMethods = {

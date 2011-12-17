@@ -1,7 +1,7 @@
 var helper = require('./test_helper'),
     rest   = require('../lib/restler'),
     sys    = require('util');
-    
+
 helper.testCase("Basic Tests", helper.echoServer, {
   testRequestShouldTakePath: function(host, test) {
     rest.get(host + '/thing').on('complete', function(data) {
@@ -50,7 +50,7 @@ helper.testCase("Basic Tests", helper.echoServer, {
   },
   testRequestShouldSerializePostBody: function(host, test) {
     rest.post(host, { data: { q: 'balls' } }).on('complete', function(data) {
-      test.ok(/content-type\: application\/x-www-form-urlencoded/.test(data), 
+      test.ok(/content-type\: application\/x-www-form-urlencoded/.test(data),
                       'should set content-type');
       test.ok(/content-length\: 7/.test(data), 'should set content-length');
       test.ok(/\r\n\r\nq=balls/.test(data), 'should have balls in the body')
@@ -77,7 +77,7 @@ helper.testCase("Basic Tests", helper.echoServer, {
   },
   testRequestShouldFire2XXAnd200Events: function(host, test) {
     var count = 0;
-    
+
     rest.get(host).on('2XX', function() {
       count++;
     }).on('200', function() {
@@ -88,7 +88,7 @@ helper.testCase("Basic Tests", helper.echoServer, {
   },
   testRequestShouldFireError4XXand404EventsFor404: function(host, test) {
     var count = 0;
-    
+
     rest.get(host, { headers: { 'X-Give-Me-Status': 404 }}).on('error', function() {
       count++;
     }).on('4XX', function() {
@@ -100,7 +100,7 @@ helper.testCase("Basic Tests", helper.echoServer, {
     });
   }
 });
- 
+
 helper.testCase('Multipart Tests', helper.echoServer, {
  testMultipartRequestWithSimpleVars: function(host, test) {
    rest.post(host, {
